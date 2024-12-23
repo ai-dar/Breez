@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Operations</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>CRUD Operations</h1>
+
+    <!-- Create User -->
+    <h2>Create User</h2>
+    <input id="create-name" type="text" placeholder="Name" />
+    <input id="create-email" type="email" placeholder="Email" />
+    <button onclick="createUser()">Create</button>
+
+    <!-- Update User -->
+    <h2>Update User</h2>
+    <input id="update-id" type="number" placeholder="ID" />
+    <input id="update-name" type="text" placeholder="New Name" />
+    <input id="update-email" type="email" placeholder="New Email" />
+    <button onclick="updateUser()">Update</button>
+
+    <!-- Delete User -->
+    <h2>Delete User</h2>
+    <input id="delete-id" type="number" placeholder="ID" />
+    <button onclick="deleteUser()">Delete</button>
+
+    <!-- Get Users -->
+    <h2>Get All Users</h2>
+    <button onclick="getUsers()">Fetch Users</button>
+
+    <h2>Find User by ID</h2>
+    <input id="find-id" type="number" placeholder="ID" />
+    <button onclick="findUserById()">Find</button>
+
+    <div id="response">
+        <h3>Response:</h3>
+        <pre id="output"></pre>
+    </div>
+
+    <script>
+        const apiUrl = "http://localhost:8080";
+
+        async function createUser() {
+            const name = document.getElementById("create-name").value;
+            const email = document.getElementById("create-email").value;
+
+            const res = await fetch(`${apiUrl}/create`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ Name: name, Email: email })
+            });
+
+            const data = await res.json();
+            document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+        }
+
+        async function getUsers() {
+            const res = await fetch(`${apiUrl}/users`);
+            const data = await res.json();
+            document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+        }
+
+        async function updateUser() {
+            const id = document.getElementById("update-id").value;
+            const name = document.getElementById("update-name").value;
+            const email = document.getElementById("update-email").value;
+
+            const res = await fetch(`${apiUrl}/update`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ID: parseInt(id), Name: name, Email: email })
+            });
+
+            const data = await res.json();
+            document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+        }
+
+        async function deleteUser() {
+            const id = document.getElementById("delete-id").value;
+
+            const res = await fetch(`${apiUrl}/delete`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ID: parseInt(id) })
+            });
+
+            const data = await res.json();
+            document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+        }
+        async function findUserById() {
+        const id = document.getElementById("find-id").value;
+
+        const res = await fetch(`${apiUrl}/user?id=${id}`);
+        if (res.ok) {
+            const data = await res.json();
+            document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+        } else {
+            const error = await res.text();
+            document.getElementById("output").innerText = `Error: ${error}`;
+        }
+    }
+    </script>
+</body>
+</html>
