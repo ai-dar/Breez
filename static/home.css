@@ -1,0 +1,156 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7fc;
+    margin: 0;
+    padding: 0;
+}
+
+.header {
+    background-color: #1DA1F2;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.header p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: normal;
+}
+
+.controls {
+    margin: 20px;
+    padding: 15px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.controls input[type="text"],
+.controls select {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+}
+
+.controls button {
+    background-color: #1DA1F2;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.controls button:hover {
+    background-color: #0d95e8;
+}
+
+.tweet-box {
+    margin: 20px;
+    padding: 15px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tweet-box textarea {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    resize: none;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.tweet-box button {
+    background-color: #1DA1F2;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.tweet-box button:hover {
+    background-color: #0d95e8;
+}
+
+.tweets {
+    margin: 20px;
+}
+
+.tweet {
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tweet p {
+    font-size: 16px;
+    color: #333;
+    margin: 0 0 10px;
+}
+
+.tweet small {
+    font-size: 14px;
+    color: #666;
+}
+
+.tweet button {
+    background-color: transparent;
+    color: #1DA1F2;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.tweet button:hover {
+    text-decoration: underline;
+}
+
+.pagination {
+    margin: 20px;
+    text-align: center;
+}
+
+.pagination button {
+    background-color: #1DA1F2;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.pagination button:hover {
+    background-color: #0d95e8;
+}
+
+.pagination span {
+    font-size: 16px;
+    color: #333;
+    margin: 0 10px;
+    font-weight: bold;
+}

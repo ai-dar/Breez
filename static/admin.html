@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+    <form id="emailForm">
+        <label for="subject">Subject:</label>
+        <input type="text" id="subject" name="subject" required>
+        <br>
+        <label for="body">Message:</label>
+        <textarea id="body" name="body" required></textarea>
+        <br>
+        <button type="submit">Send Emails</button>
+    </form>
+    <script>
+        document.getElementById("emailForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const subject = document.getElementById("subject").value;
+            const body = document.getElementById("body").value;
+
+            const response = await fetch("/admin/send-emails", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ subject, body }),
+            });
+
+            if (response.ok) {
+                alert("Emails sent successfully!");
+            } else {
+                alert("Failed to send emails.");
+            }
+        });
+    </script>
+</body>
+</html>
