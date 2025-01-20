@@ -7,7 +7,7 @@ import (
 func SendEmail(to string, subject string, body string) error {
 	// Конфигурация почтового сервера
 	from := "admbreez@gmail.com"
-	password := "meib hyss oepz azgj"
+	password := ""
 	host := "smtp.gmail.com"
 	port := 587
 
