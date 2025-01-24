@@ -1,0 +1,16 @@
+UNIT TEST
+go test ./tests/unit_tests/tweetHandler_unit_test.go -v
+
+INTEGRATION TEST
+go test ./tests/integration_tests/... -v
+
+E2E
+Another cmd for Starting server
+go run main.go
+
+Another cmd for Starting test
+java -jar selenium-server-4.28.0.jar standalone
+
+For starting test
+go test ./tests/e2e_tests/... -v
+

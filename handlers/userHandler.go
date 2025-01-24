@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"breez/models"
+	"breez/utils"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -50,15 +51,9 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user.Name == "" {
+	if user.Name == "" || !isValidEmail(user.Email) || len(user.Password) < 8 {
 		Log.Warn("Attempt to register user with missing name")
-		http.Error(w, "Name is required.", http.StatusBadRequest)
-		return
-	}
-
-	if !isValidEmail(user.Email) {
-		Log.WithField("email", user.Email).Warn("Invalid email format")
-		http.Error(w, "Invalid email format.", http.StatusBadRequest)
+		http.Error(w, "Invalid input. Ensure all fields are correct.", http.StatusBadRequest)
 		return
 	}
 
@@ -76,13 +71,53 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Generate verification token
+	verificationToken := utils.GenerateToken(user.Email)
+	verificationURL := fmt.Sprintf("http://localhost:8080/api/verify?token=%s", verificationToken)
+
+	// Send verification emai
+	emailBody := fmt.Sprintf("Hello %s, please confirm your email by clicking the link: %s", user.Name, verificationURL)
+	go utils.SendEmailWithAttachments(user.Email, "Email Verification", emailBody, nil)
+
 	Log.WithFields(logrus.Fields{
 		"user_id": user.ID,
 		"email":   user.Email,
-	}).Info("User registered successfully")
+	}).Info("User registered successfully and verification email sent")
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "User registered successfully!"})
+}
+
+func VerifyEmail(w http.ResponseWriter, r *http.Request) {
+	token := r.URL.Query().Get("token")
+	if token == "" {
+		http.Error(w, "Missing token", http.StatusBadRequest)
+		return
+	}
+
+	email := utils.VerifyToken(token)
+	if email == "" {
+		http.Error(w, "Invalid or expired token", http.StatusBadRequest)
+		return
+	}
+
+	var user models.User
+	if err := db.Where("email = ?", email).First(&user).Error; err != nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	if user.IsVerified {
+		http.Error(w, "Email already verified", http.StatusBadRequest)
+		return
+	}
+
+	user.IsVerified = true
+	db.Save(&user)
+
+	Log.WithField("email", email).Info("Email verified successfully")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Email verified successfully!"})
 }
 
 // LoginUser handles user login
@@ -98,6 +133,12 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	if err := db.Where("email = ?", credentials.Email).First(&user).Error; err != nil {
 		Log.WithField("email", credentials.Email).Warn("User not found during login")
 		http.Error(w, "User not found", http.StatusUnauthorized)
+		return
+	}
+
+	if !user.IsVerified {
+		Log.WithField("email", user.Email).Warn("Unverified email login attempt")
+		http.Error(w, "Email not verified. Please verify your email before logging in.", http.StatusForbidden)
 		return
 	}
 

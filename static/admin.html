@@ -14,27 +14,35 @@
         <label for="body">Message:</label>
         <textarea id="body" name="body" required></textarea>
         <br>
+        <label for="attachments">Attachments:</label>
+        <input type="file" id="attachments" name="attachments" multiple>
+        <br>
         <button type="submit">Send Emails</button>
     </form>
     <script>
-        document.getElementById("emailForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
+       document.getElementById("emailForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-            const subject = document.getElementById("subject").value;
-            const body = document.getElementById("body").value;
+        const formData = new FormData();
+        formData.append("subject", document.getElementById("subject").value);
+        formData.append("body", document.getElementById("body").value);
 
-            const response = await fetch("/admin/send-emails", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ subject, body }),
-            });
+        const attachments = document.getElementById("attachments").files;
+        for (let i = 0; i < attachments.length; i++) {
+            formData.append("attachments", attachments[i]);
+        }
 
-            if (response.ok) {
-                alert("Emails sent successfully!");
-            } else {
-                alert("Failed to send emails.");
-            }
+        const response = await fetch("/admin/send-emails", {
+            method: "POST",
+            body: formData,
         });
+
+        if (response.ok) {
+            alert("Emails sent successfully!");
+        } else {
+            alert("Failed to send emails.");
+        }
+    });
     </script>
 </body>
 </html>

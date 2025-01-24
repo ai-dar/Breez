@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080" # Маппинг локального порта 8080 на порт контейнера
+    environment:
+      - GITHUB_CLIENT_ID=Ov23li2nUrPrAcIbJbHD
+      - GITHUB_CLIENT_SECRET=afbf3e11a472159f812765039de495bf555c9f22
+      - GITHUB_REDIRECT_URL=http://localhost:8080/auth/github/callback
+      - DATABASE_URL=postgres://postgres:12345@db:5432/breez?sslmode=disable
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: breez
+    ports:
+      - "5432:5432" # Маппинг порта для базы данных
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:

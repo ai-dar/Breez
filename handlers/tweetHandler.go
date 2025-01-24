@@ -18,48 +18,89 @@ func init() {
 
 // CreateTweet handles creating a new tweet
 func CreateTweet(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("user_id")
+	// Получаем cookie с user_id
+	userCookie, err := r.Cookie("user_id")
 	if err != nil {
 		logger.WithField("error", err).Warn("Unauthorized access - missing cookie")
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	userID, err := strconv.Atoi(cookie.Value)
-	if err != nil {
+	userID, err := strconv.Atoi(userCookie.Value)
+	if err != nil || userID <= 0 {
 		logger.WithField("error", err).Warn("Invalid user ID in cookie")
 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
 		return
 	}
 
+	// Определяем источник входа
+	sourceCookie, err := r.Cookie("source")
+	source := "account" // По умолчанию считаем, что вход выполнен через аккаунт
+	if err == nil && sourceCookie.Value == "github" {
+		source = "github"
+	}
+
+	// Инициализируем имя пользователя
+	var userName string
+
+	if source == "github" {
+		// Извлекаем имя пользователя из базы данных
+		var user models.User
+		if err := db.First(&user, userID).Error; err != nil {
+			logger.WithField("user_id", userID).Warn("User not found")
+			http.Error(w, "User not found", http.StatusUnauthorized)
+			return
+		}
+		userName = user.Name
+	} else {
+		// Если вход выполнен через аккаунт, берём имя из cookie (или можно запросить в базе)
+		userNameCookie, err := r.Cookie("user_name")
+		if err != nil {
+			logger.Warn("Missing user_name cookie for account login")
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+		userName = userNameCookie.Value
+	}
+
+	// Декодируем JSON-полезную нагрузку для создания твита
 	var tweet models.Tweet
 	if err := json.NewDecoder(r.Body).Decode(&tweet); err != nil {
 		logger.WithField("error", err).Warn("Failed to decode JSON payload")
-		http.Error(w, "Invalid payload", http.StatusBadRequest)
+		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
 		return
 	}
 
+	// Проверяем, что содержание твита не пустое
 	if len(tweet.Content) == 0 {
 		logger.Warn("Attempt to create tweet with empty content")
 		http.Error(w, "Tweet content cannot be empty", http.StatusBadRequest)
 		return
 	}
 
+	// Устанавливаем идентификатор пользователя в твите
 	tweet.UserID = uint(userID)
 
+	// Сохраняем твит в базе данных
 	if err := db.Create(&tweet).Error; err != nil {
 		logger.WithField("error", err).Error("Failed to create tweet in database")
 		http.Error(w, "Failed to create tweet", http.StatusInternalServerError)
 		return
 	}
 
+	// Логируем успешное создание твита
 	logger.WithFields(logrus.Fields{
-		"user_id": userID,
-		"tweet":   tweet.Content,
+		"user_id":   userID,
+		"user_name": userName,
+		"tweet":     tweet.Content,
 	}).Info("Tweet created successfully")
 
+	// Возвращаем успешный ответ с именем пользователя и созданным твитом
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(tweet)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"tweet": tweet,
+		"user":  userName,
+	})
 }
 
 // GetTweetsWithFilters handles filtering, sorting, and pagination
@@ -111,7 +152,18 @@ func GetTweetsWithFilters(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Применяем сортировку
+	validSortFields := map[string]bool{
+		"created_at": true,
+		"likes":      true,
+		"user_id":    true,
+	}
+
 	if sort != "" {
+		if !validSortFields[sort] {
+			logger.WithField("sort", sort).Warn("Invalid sort field")
+			http.Error(w, "Invalid sort field", http.StatusBadRequest)
+			return
+		}
 		query = query.Order(sort)
 	} else {
 		query = query.Order("created_at DESC")
@@ -159,6 +211,111 @@ func GetTweetsWithFilters(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func isAdmin(userID uint) (bool, error) {
+	var user models.User
+	if err := db.First(&user, userID).Error; err != nil {
+		return false, err
+	}
+	return user.Role == "admin", nil
+}
+
+func UpdateTweet(w http.ResponseWriter, r *http.Request) {
+	var userID uint
+	cookie, err := r.Cookie("user_id")
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	userID64, err := strconv.ParseUint(cookie.Value, 10, 32)
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+	userID = uint(userID64)
+
+	isAdmin, err := isAdmin(userID)
+	if err != nil {
+		http.Error(w, "Failed to verify user role", http.StatusInternalServerError)
+		return
+	}
+	if !isAdmin {
+		http.Error(w, "Permission denied", http.StatusForbidden)
+		return
+	}
+
+	var updateRequest struct {
+		TweetID uint   `json:"tweet_id"`
+		Content string `json:"content"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&updateRequest); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if len(updateRequest.Content) == 0 {
+		http.Error(w, "Tweet content cannot be empty", http.StatusBadRequest)
+		return
+	}
+
+	var tweet models.Tweet
+	if err := db.First(&tweet, updateRequest.TweetID).Error; err != nil {
+		http.Error(w, "Tweet not found", http.StatusNotFound)
+		return
+	}
+
+	tweet.Content = updateRequest.Content
+	if err := db.Save(&tweet).Error; err != nil {
+		http.Error(w, "Failed to update tweet", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Tweet updated successfully"})
+}
+
+func DeleteTweet(w http.ResponseWriter, r *http.Request) {
+	var userID uint
+	cookie, err := r.Cookie("user_id")
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	userID64, err := strconv.ParseUint(cookie.Value, 10, 32)
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+	userID = uint(userID64)
+
+	isAdmin, err := isAdmin(userID)
+	if err != nil {
+		http.Error(w, "Failed to verify user role", http.StatusInternalServerError)
+		return
+	}
+	if !isAdmin {
+		http.Error(w, "Permission denied", http.StatusForbidden)
+		return
+	}
+
+	var deleteRequest struct {
+		TweetID uint `json:"tweet_id"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&deleteRequest); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if err := db.Delete(&models.Tweet{}, deleteRequest.TweetID).Error; err != nil {
+		http.Error(w, "Failed to delete tweet", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Tweet deleted successfully"})
+}
+
 // LikeTweet handles liking and unliking a tweet
 func LikeTweet(w http.ResponseWriter, r *http.Request) {
 	var likeRequest struct {
@@ -166,7 +323,6 @@ func LikeTweet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&likeRequest); err != nil {
-		logger.WithField("error", err).Warn("Failed to decode like request payload")
 		http.Error(w, "Invalid payload", http.StatusBadRequest)
 		return
 	}
@@ -174,14 +330,12 @@ func LikeTweet(w http.ResponseWriter, r *http.Request) {
 	// Получить user_id из cookie
 	cookie, err := r.Cookie("user_id")
 	if err != nil {
-		logger.WithField("error", err).Warn("Unauthorized access - missing cookie")
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	userID, err := strconv.Atoi(cookie.Value)
 	if err != nil {
-		logger.WithField("error", err).Warn("Invalid user ID in cookie")
 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
 		return
 	}
@@ -189,41 +343,25 @@ func LikeTweet(w http.ResponseWriter, r *http.Request) {
 	// Проверить, существует ли лайк
 	var existingLike models.Like
 	if err := db.Where("tweet_id = ? AND user_id = ?", likeRequest.TweetID, uint(userID)).First(&existingLike).Error; err == nil {
-		// Если лайк существует, удаляем его
 		if err := db.Delete(&existingLike).Error; err != nil {
-			logger.WithField("error", err).Error("Failed to unlike tweet")
 			http.Error(w, "Failed to unlike tweet", http.StatusInternalServerError)
 			return
 		}
-
-		logger.WithFields(logrus.Fields{
-			"action":   "unlike",
-			"user_id":  userID,
-			"tweet_id": likeRequest.TweetID,
-		}).Info("Tweet unliked successfully")
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Tweet unliked!"})
 		return
 	}
 
-	// Если лайк не существует, добавляем его
 	newLike := models.Like{
 		TweetID: likeRequest.TweetID,
 		UserID:  uint(userID),
 	}
 
 	if err := db.Create(&newLike).Error; err != nil {
-		logger.WithField("error", err).Error("Failed to like tweet")
 		http.Error(w, "Failed to like tweet", http.StatusInternalServerError)
 		return
 	}
-
-	logger.WithFields(logrus.Fields{
-		"action":   "like",
-		"user_id":  userID,
-		"tweet_id": likeRequest.TweetID,
-	}).Info("Tweet liked successfully")
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Tweet liked!"})

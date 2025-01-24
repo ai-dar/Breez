@@ -9,7 +9,7 @@
 <body>
     <div class="header">
         <h1>Breez</h1>
-        <p>Welcome back!</p>
+        <p id="welcomeMessage">Welcome back!</p>
     </div>
 
     <!-- Панель управления -->
@@ -44,17 +44,26 @@
         let currentPage = 1;
         let totalPages = 1;
 
-        // Проверяем текущего пользователя
+        // Извлечение имени пользователя из cookie
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        const userName = getCookie("user_name");
+        if (userName) {
+            document.getElementById("welcomeMessage").textContent = `Welcome back, ${userName}!`;
+        }
+
+        // Проверяем роль пользователя
         async function checkUserRole() {
             const response = await fetch("/user/me", { method: "GET", credentials: "include" });
             if (response.ok) {
                 const user = await response.json();
                 if (user.role === "admin") {
-                    // Показываем кнопку только для админов
                     const adminButton = document.getElementById("adminButton");
                     adminButton.style.display = "block";
-
-                    // Добавляем обработчик для перехода
                     adminButton.addEventListener("click", () => {
                         window.location.href = "/static/admin.html";
                     });
@@ -63,53 +72,72 @@
                 console.error("Failed to fetch user info");
             }
         }
-    
-        // Загрузка твитов с поддержкой фильтрации, сортировки и пагинации
+
+        // Загрузка твитов с фильтрацией, сортировкой и пагинацией
         async function loadTweets(filter = "", sort = "created_at", page = 1) {
-            try {
-                const url = new URL('/tweets', window.location.origin);
-                url.searchParams.append('filter', filter);
-                url.searchParams.append('sort', sort);
-                url.searchParams.append('page', page);
+    try {
+        const url = new URL('/tweets', window.location.origin);
+        url.searchParams.append('filter', filter);
+        url.searchParams.append('sort', sort);
+        url.searchParams.append('page', page);
 
-                const response = await fetch(url, { method: 'GET', credentials: 'include' });
+        const response = await fetch(url, { method: 'GET', credentials: 'include' });
 
-                if (!response.ok) {
-                        if (response.status === 404) {
-                            alert("Page does not exist. Staying on the current page.");
-                } else {
-                    const errorText = await response.text();
-                    alert(`Failed to load tweets: ${errorText}`);
-                }
-                return;
+        if (!response.ok) {
+            if (response.status === 404) {
+                alert("Page does not exist. Staying on the current page.");
+            } else {
+                const errorText = await response.text();
+                alert(`Failed to load tweets: ${errorText}`);
             }
-
-            const data = await response.json();
-            const tweets = data.tweets;
-            totalPages = data.total_pages;
-
-            const tweetsContainer = document.getElementById('tweets');
-            tweetsContainer.innerHTML = '';
-
-            tweets.forEach(tweet => {
-                const tweetElement = document.createElement('div');
-                tweetElement.classList.add('tweet');
-                tweetElement.innerHTML = `
-                    <p>${tweet.content}</p>
-                    <small>By: ${tweet.user.name || 'Unknown'} | Likes: ${tweet.likes}</small>
-                    <button onclick="likeTweet(${tweet.id})">Like</button>
-                `;
-                tweetsContainer.appendChild(tweetElement);
-            });
-
-            document.getElementById('currentPage').textContent = currentPage;
-        } catch (error) {
-            alert(`Failed to load tweets: ${error.message}`);
-            console.error("Error loading tweets:", error);
+            return;
         }
-    }
 
-    
+        const data = await response.json();
+        const tweets = data.tweets;
+        totalPages = data.total_pages;
+
+        const tweetsContainer = document.getElementById('tweets');
+        tweetsContainer.innerHTML = '';
+
+        // Проверяем, является ли пользователь администратором
+        let isAdmin = false;
+        try {
+            const userResponse = await fetch("/user/me", { method: "GET", credentials: "include" });
+            if (userResponse.ok) {
+                const user = await userResponse.json();
+                console.log("User data:", user); // Логируем данные пользователя
+                isAdmin = user.role === "admin";
+                console.log("Is admin:", isAdmin); // Логируем статус администратора
+            } else {
+                console.error("Failed to fetch user data:", userResponse.status);
+            }
+        } catch (err) {
+            console.error("Error fetching user data:", err);
+        }
+
+        tweets.forEach(tweet => {
+            const tweetElement = document.createElement('div');
+            tweetElement.classList.add('tweet');
+            tweetElement.innerHTML = `
+                <p>${tweet.content}</p>
+                <small>By: ${tweet.user.name || 'Unknown'} | Likes: ${tweet.likes}</small>
+                <button onclick="likeTweet(${tweet.id})">Like</button>
+                ${isAdmin ? `
+                    <button onclick="editTweet(${tweet.id}, '${tweet.content}')">Edit</button>
+                    <button onclick="deleteTweet(${tweet.id})">Delete</button>
+                ` : ''}
+            `;
+            tweetsContainer.appendChild(tweetElement);
+        });
+
+        document.getElementById('currentPage').textContent = currentPage;
+    } catch (error) {
+        alert(`Failed to load tweets: ${error.message}`);
+        console.error("Error loading tweets:", error);
+    }
+}
+
         // Отправка нового твита
         async function postTweet() {
             const content = document.getElementById('tweetContent').value.trim();
@@ -117,24 +145,63 @@
                 alert('Tweet content cannot be empty!');
                 return;
             }
-    
+
             const response = await fetch('/tweets', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ content }),
             });
-    
+
             if (response.ok) {
+                const data = await response.json();
+                alert(`Tweet created successfully by ${data.user}!`);
                 document.getElementById('tweetContent').value = '';
-                // Обновляем текущую страницу вместо сброса на первую
-                const filter = document.getElementById('filterInput').value;
-                const sort = document.getElementById('sortSelect').value;
-                loadTweets(filter, sort, currentPage); // Оставляем пользователя на текущей странице
+                loadTweets(); // Перезагружаем список твитов
             } else {
                 alert('Failed to tweet');
             }
         }
-    
+        // Функция редактирования твита
+        async function editTweet(tweetId, currentContent) {
+        const newContent = prompt("Edit your tweet:", currentContent);
+        if (!newContent || newContent.trim() === "") {
+            alert("Tweet content cannot be empty!");
+            return;
+        }
+
+        const response = await fetch("/admin/tweet/update", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ tweet_id: tweetId, content: newContent }),
+        });
+
+        if (response.ok) {
+            alert("Tweet updated successfully!");
+            loadTweets();
+        } else {
+            alert("Failed to update tweet");
+        }
+    }
+    // Функция удаления твита
+    async function deleteTweet(tweetId) {
+        if (!confirm("Are you sure you want to delete this tweet?")) {
+            return;
+        }
+
+        const response = await fetch("/admin/tweet/delete", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ tweet_id: tweetId }),
+        });
+
+        if (response.ok) {
+            alert("Tweet deleted successfully!");
+            loadTweets();
+        } else {
+            alert("Failed to delete tweet");
+        }
+    }
+
         // Лайк для твита
         async function likeTweet(tweetId) {
             const response = await fetch('/like', {
@@ -142,45 +209,35 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ tweetId }),
             });
-    
+
             if (response.ok) {
-                const filter = document.getElementById('filterInput').value;
-                const sort = document.getElementById('sortSelect').value;
-                loadTweets(filter, sort, currentPage);
+                loadTweets();
             } else {
                 alert('Failed to like tweet');
             }
         }
-    
+
         // Применение фильтра и сортировки
         function applyFilterSort() {
             const filter = document.getElementById('filterInput').value;
             const sort = document.getElementById('sortSelect').value;
-            currentPage = 1; // Сброс на первую страницу
-            document.getElementById('currentPage').textContent = currentPage;
-            loadTweets(filter, sort, currentPage);
+            loadTweets(filter, sort, 1);
         }
-    
+
         // Переключение страниц
         function changePage(direction) {
             const newPage = currentPage + direction;
-
             if (newPage > totalPages || newPage < 1) {
                 alert("No more pages");
                 return;
             }
-
             currentPage = newPage;
             loadTweets("", "created_at", currentPage);
         }
-    
-        // Обработчик кнопки отправки твита
+
         document.getElementById('tweetButton').addEventListener('click', postTweet);
-        // Проверяем роль пользователя
         checkUserRole();
-        // Загрузка твитов при загрузке страницы
         loadTweets();
     </script>
-    
 </body>
 </html>

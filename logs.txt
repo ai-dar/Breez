@@ -1,0 +1,132 @@
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-08T16:38:51+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-08T16:38:51+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-08T16:38:51+05:00"}
+{"action":"like","level":"info","msg":"Tweet liked successfully","time":"2025-01-08T16:39:27+05:00","tweet_id":7,"user_id":19}
+{"action":"fetch_tweets","count":5,"filter":"","level":"info","msg":"Tweets fetched successfully","page":1,"sort":"created_at","time":"2025-01-08T16:39:27+05:00","total_pages":5}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-08T17:52:51+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-08T17:52:51+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-08T17:52:51+05:00"}
+{"ip":"[::1]:52115","level":"warning","msg":"Rate limit exceeded","time":"2025-01-08T17:54:32+05:00"}
+{"ip":"[::1]:52115","level":"warning","msg":"Rate limit exceeded","time":"2025-01-08T17:54:33+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-17T14:43:42+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-17T14:43:43+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-17T14:43:43+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-17T14:47:47+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-17T14:47:47+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-17T14:47:47+05:00"}
+{"ip":"[::1]:52324","level":"warning","msg":"Rate limit exceeded","time":"2025-01-17T14:48:30+05:00"}
+{"ip":"[::1]:52324","level":"warning","msg":"Rate limit exceeded","time":"2025-01-17T14:48:30+05:00"}
+{"ip":"[::1]:52325","level":"warning","msg":"Rate limit exceeded","time":"2025-01-17T14:48:32+05:00"}
+{"ip":"[::1]:52324","level":"warning","msg":"Rate limit exceeded","time":"2025-01-17T14:48:34+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-17T14:50:31+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-17T14:50:32+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-17T14:50:32+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-21T00:10:58+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-21T00:10:58+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-21T00:10:58+05:00"}
+{"ip":"[::1]:54439","level":"warning","msg":"Rate limit exceeded","time":"2025-01-21T00:11:43+05:00"}
+{"ip":"[::1]:54440","level":"warning","msg":"Rate limit exceeded","time":"2025-01-21T00:11:43+05:00"}
+{"ip":"[::1]:54439","level":"warning","msg":"Rate limit exceeded","time":"2025-01-21T00:11:45+05:00"}
+{"ip":"[::1]:54440","level":"warning","msg":"Rate limit exceeded","time":"2025-01-21T00:11:48+05:00"}
+{"ip":"[::1]:54439","level":"warning","msg":"Rate limit exceeded","time":"2025-01-21T00:11:50+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-21T00:34:04+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-21T00:34:04+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-21T00:34:04+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-21T00:40:26+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-21T00:40:26+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-21T00:40:26+05:00"}
+{"level":"info","msg":"Redirecting to GitHub login","time":"2025-01-21T00:40:36+05:00","url":"https://github.com/login/oauth/authorize?access_type=offline\u0026client_id=Ov23li2nUrPrAcIbJbHD\u0026redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fauth%2Fgithub%2Fcallback\u0026response_type=code\u0026scope=read%3Auser+user%3Aemail\u0026state=randomstate"}
+{"level":"info","msg":"Redirecting to GitHub login","time":"2025-01-21T00:40:57+05:00","url":"https://github.com/login/oauth/authorize?access_type=offline\u0026client_id=Ov23li2nUrPrAcIbJbHD\u0026redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fauth%2Fgithub%2Fcallback\u0026response_type=code\u0026scope=read%3Auser+user%3Aemail\u0026state=randomstate"}
+{"level":"info","msg":"GitHub user authenticated","time":"2025-01-21T00:41:04+05:00","user":{"avatar_url":"https://avatars.githubusercontent.com/u/181954075?v=4","bio":"Back-End Developer | AITU 2 course | Software Engineering\r\n","blog":"","collaborators":0,"company":null,"created_at":"2024-09-18T09:50:07Z","disk_usage":37445,"email":"aidarsoulsov@mail.ru","events_url":"https://api.github.com/users/ai-dar/events{/privacy}","followers":2,"followers_url":"https://api.github.com/users/ai-dar/followers","following":2,"following_url":"https://api.github.com/users/ai-dar/following{/other_user}","gists_url":"https://api.github.com/users/ai-dar/gists{/gist_id}","gravatar_id":"","hireable":null,"html_url":"https://github.com/ai-dar","id":181954075,"location":"Astana, Almaty","login":"ai-dar","name":"Aidar","node_id":"U_kgDOCthmGw","notification_email":"aidarsoulsov@mail.ru","organizations_url":"https://api.github.com/users/ai-dar/orgs","owned_private_repos":0,"plan":{"collaborators":0,"name":"free","private_repos":10000,"space":976562499},"private_gists":0,"public_gists":0,"public_repos":12,"received_events_url":"https://api.github.com/users/ai-dar/received_events","repos_url":"https://api.github.com/users/ai-dar/repos","site_admin":false,"starred_url":"https://api.github.com/users/ai-dar/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/ai-dar/subscriptions","total_private_repos":0,"twitter_username":null,"two_factor_authentication":false,"type":"User","updated_at":"2024-12-27T15:19:22Z","url":"https://api.github.com/users/ai-dar","user_view_type":"private"}}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T00:37:41+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T00:37:41+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T00:37:41+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T00:39:17+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T00:39:17+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T00:39:17+05:00"}
+{"ip":"[::1]:62951","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T00:39:28+05:00"}
+{"ip":"[::1]:62952","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T00:39:28+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T00:41:41+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T00:41:41+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T00:41:41+05:00"}
+{"ip":"[::1]:63219","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T00:41:52+05:00"}
+{"ip":"[::1]:63269","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T00:41:55+05:00"}
+{"ip":"[::1]:63219","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T00:41:57+05:00"}
+{"ip":"[::1]:63219","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T00:41:58+05:00"}
+{"ip":"[::1]:63269","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T00:41:58+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T00:46:38+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T00:46:38+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T00:46:38+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T00:47:55+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T00:47:55+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T00:47:55+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T00:55:19+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T00:55:19+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T00:55:19+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T01:00:13+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T01:00:14+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T01:00:14+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T01:49:59+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T01:50:00+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T01:50:00+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T01:54:54+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T01:54:55+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T01:54:55+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T01:59:44+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T01:59:44+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T01:59:44+05:00"}
+{"ip":"[::1]:49965","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T01:59:58+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T02:00:59+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T02:00:59+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T02:00:59+05:00"}
+{"ip":"[::1]:50033","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T02:01:07+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T02:02:56+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T02:02:56+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T02:02:56+05:00"}
+{"ip":"[::1]:50137","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T02:03:16+05:00"}
+{"ip":"[::1]:50136","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T02:03:20+05:00"}
+{"ip":"[::1]:50136","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T02:03:24+05:00"}
+{"ip":"[::1]:50136","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T02:03:27+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T02:08:20+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T02:08:20+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T02:08:20+05:00"}
+{"ip":"[::1]:50568","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T02:08:24+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T02:09:03+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T02:09:03+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T02:09:03+05:00"}
+{"ip":"[::1]:50625","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T02:09:07+05:00"}
+{"ip":"[::1]:50624","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T02:09:09+05:00"}
+{"ip":"[::1]:50624","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T02:09:17+05:00"}
+{"ip":"[::1]:50625","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T02:09:22+05:00"}
+{"ip":"[::1]:50625","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T02:09:25+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T02:09:42+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T02:09:43+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T02:09:43+05:00"}
+{"ip":"[::1]:50685","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T02:09:50+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T03:17:38+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T03:17:38+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T03:17:38+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T03:18:24+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T03:18:24+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T03:18:24+05:00"}
+{"ip":"[::1]:55087","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T03:18:26+05:00"}
+{"ip":"[::1]:55086","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T03:18:37+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T03:20:48+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T03:20:48+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T03:20:48+05:00"}
+{"ip":"[::1]:55268","level":"warning","msg":"Rate limit exceeded","time":"2025-01-23T03:20:50+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T03:21:33+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T03:21:33+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T03:21:33+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T03:59:38+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T03:59:38+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T03:59:38+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T04:02:54+05:00"}
+{"level":"info","msg":"Database connected and migrated","time":"2025-01-23T04:02:54+05:00"}
+{"level":"info","msg":"Server running on port 8080","time":"2025-01-23T04:02:54+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T19:35:28+05:00"}
+{"level":"fatal","msg":"Failed to connect to PostgreSQL:failed to connect to `user=User database=`:\n\t[::1]:5432 (localhost): tls error: server refused TLS connection\n\t127.0.0.1:5432 (localhost): tls error: server refused TLS connection\n\t[::1]:5432 (localhost): failed SASL auth: FATAL: password authentication failed for user \"User\" (SQLSTATE 28P01)","time":"2025-01-23T19:35:28+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T19:49:29+05:00"}
+{"level":"fatal","msg":"Failed to connect to PostgreSQL:failed to connect to `user=User database=`:\n\t[::1]:5432 (localhost): tls error: server refused TLS connection\n\t127.0.0.1:5432 (localhost): tls error: server refused TLS connection\n\t[::1]:5432 (localhost): failed SASL auth: FATAL: password authentication failed for user \"User\" (SQLSTATE 28P01)","time":"2025-01-23T19:49:29+05:00"}
+{"level":"info","msg":"Logger initialized and writing to logs.txt","time":"2025-01-23T19:49:36+05:00"}
+{"level":"fatal","msg":"Failed to connect to PostgreSQL:failed to connect to `user=User database=`:\n\t[::1]:5432 (localhost): tls error: server refused TLS connection\n\t127.0.0.1:5432 (localhost): tls error: server refused TLS connection\n\t[::1]:5432 (localhost): failed SASL auth: FATAL: password authentication failed for user \"User\" (SQLSTATE 28P01)","time":"2025-01-23T19:49:37+05:00"}
