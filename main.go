@@ -53,7 +53,9 @@ func rateLimitMiddleware(next http.Handler) http.Handler {
 }
 
 func connectDB() *gorm.DB {
-	dsn := os.Getenv("DATABASE_URL")
+	// dsn := os.Getenv("DATABASE_URL")
+	dsn := "user=postgres password=1234 dbname=breez sslmode=disable"
+
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to connect to PostgreSQL:", err)
@@ -89,11 +91,19 @@ func main() {
 	r.HandleFunc("/auth/github/login", handlers.GitHubLoginHandler).Methods("GET")
 	r.HandleFunc("/auth/github/callback", func(w http.ResponseWriter, r *http.Request) { handlers.GitHubCallbackHandler(db, w, r) }).Methods("GET")
 
+	r.HandleFunc("/pay", func(w http.ResponseWriter, r *http.Request) { handlers.HandlePayment(db, w, r) }).Methods("POST")
+
 	// Роуты для администратора
 	r.HandleFunc("/admin/register", handlers.RegisterAdmin).Methods("POST")
 	r.HandleFunc("/admin/send-emails", handlers.SendEmailToAllUsers).Methods("POST")
 	r.HandleFunc("/admin/tweet/update", handlers.UpdateTweet).Methods("PUT")
 	r.HandleFunc("/admin/tweet/delete", handlers.DeleteTweet).Methods("DELETE")
+	r.HandleFunc("/ws", handlers.HandleConnections)
+	go handlers.HandleMessages()
+	r.HandleFunc("/api/check-active-chat", handlers.CheckActiveChat).Methods("GET")
+	r.HandleFunc("/api/start-chat", handlers.StartChat).Methods("POST")
+	r.HandleFunc("/api/admin/close-chat", handlers.CloseChat).Methods("POST")
+	r.HandleFunc("/api/admin/active-chats", handlers.GetActiveChats).Methods("GET")
 
 	// Роуты для пользователя
 	r.HandleFunc("/register", handlers.RegisterUser).Methods("POST")

@@ -12,6 +12,13 @@
         <p id="welcomeMessage">Welcome back!</p>
     </div>
 
+    <div id="support-chat">
+        <h2>Чат с поддержкой</h2>
+        <p id="chat-link-container">
+            <button id="start-chat-button" style="display: none;" onclick="startChat()">Начать новый чат</button>
+        </p>
+    </div>
+
     <!-- Панель управления -->
     <div class="controls">
         <input type="text" id="filterInput" placeholder="Filter by content or user">
@@ -26,6 +33,7 @@
     <div class="tweet-box">
         <textarea id="tweetContent" placeholder="What's happening?" rows="3" required></textarea>
         <button id="tweetButton">Tweet</button>
+        <button id="payButton">Оплатить подписку</button>
     </div>
 
     <!-- Список твитов -->
@@ -43,6 +51,79 @@
     <script>
         let currentPage = 1;
         let totalPages = 1;
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+        async function getUserID() {
+        try {
+            const response = await fetch("/user/me", { method: "GET", credentials: "include" });
+            if (!response.ok) throw new Error("Не авторизован");
+
+            const data = await response.json();
+            return data.user_id;
+        } catch (error) {
+            console.error("Ошибка получения user_id:", error);
+            return null;
+        }
+    }
+
+    async function checkAuth() {
+        const userId = await getUserID();
+        if (!userId) {
+            window.location.href = "/static/index.html";
+        } else {
+            checkChat();
+        }
+    }
+
+        console.log(document.cookie);
+        async function checkChat() {
+        const userId = await getUserID();
+        if (!userId) return;
+
+        fetch(`/api/check-active-chat?user_id=${userId}`, { // ✅ Исправленный маршрут
+            method: "GET",
+            credentials: "include"
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("🔍 Ответ сервера на check-active-chat:", data);
+            const chatContainer = document.getElementById("chat-link-container");
+            if (data.active) {
+                chatContainer.innerHTML = `<a href="chat.html?chat_id=${data.chat_id}">Перейти в чат</a>`;
+            } else {
+                document.getElementById("start-chat-button").style.display = "block";
+            }
+        })
+        .catch(error => console.error("Ошибка проверки чата:", error));
+    }
+
+    async function startChat() {
+        const userId = await getUserID();
+        if (!userId) {
+            console.error("Ошибка: user_id не найден!");
+            return;
+        }
+
+        fetch(`/api/start-chat?user_id=${userId}`, {
+            method: "POST",
+            credentials: "include"
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.chat_id) {
+                window.location.href = `chat.html?chat_id=${data.chat_id}`;
+            } else {
+                alert("Ошибка создания чата");
+            }
+        })
+        .catch(error => {
+            console.error("Ошибка при создании чата:", error);
+            alert("Ошибка соединения с сервером");
+        });
+    }
 
         // Извлечение имени пользователя из cookie
         function getCookie(name) {
@@ -50,6 +131,35 @@
             const parts = value.split(`; ${name}=`);
             if (parts.length === 2) return parts.pop().split(';').shift();
         }
+
+        document.getElementById("payButton").addEventListener("click", function() {
+    const paymentData = {
+        user_id: 123,  // ID пользователя (можно подставить динамически)
+        amount: 9.99,  // Сумма подписки
+        currency: "USD",
+        service_id: "premium_subscription"
+    };
+
+    fetch("http://localhost:8080/pay", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(paymentData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.redirect_url) {
+            window.location.href = data.redirect_url; // Перенаправление на страницу оплаты
+        } else {
+            alert("Ошибка оплаты");
+        }
+    })
+    .catch(error => {
+        alert("Ошибка соединения с сервером");
+        console.error("Ошибка:", error);
+    });
+});
 
         const userName = getCookie("user_name");
         if (userName) {
@@ -234,7 +344,8 @@
             currentPage = newPage;
             loadTweets("", "created_at", currentPage);
         }
-
+            checkChat();
+        
         document.getElementById('tweetButton').addEventListener('click', postTweet);
         checkUserRole();
         loadTweets();

@@ -25,7 +25,7 @@ const secretKey = "tVRp+9OE2lRCeU/NhR65afmhE8XbArx/Bz2TKRd4l6Q="
 func SendEmailWithAttachments(to, subject, body string, attachments []EmailAttachment) error {
 	// Конфигурация почтового сервера
 	from := "admbreez@gmail.com"
-	password := ""
+	password := "meib hyss oepz azgj"
 	host := "smtp.gmail.com"
 	port := 587
 

@@ -19,6 +19,17 @@
         <br>
         <button type="submit">Send Emails</button>
     </form>
+    <h2>Активные чаты</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID Чата</th>
+                <th>Клиент</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody id="chats-list"></tbody>
+    </table>
     <script>
        document.getElementById("emailForm").addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -43,6 +54,56 @@
             alert("Failed to send emails.");
         }
     });
+    async function loadChats() {
+    fetch("/api/admin/active-chats", { method: "GET", credentials: "include" })
+        .then(response => response.json())
+        .then(data => {
+            const table = document.getElementById("chats-list");
+            table.innerHTML = "";
+
+            data.forEach(chat => {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                    <td>${chat.chat_id || "Неизвестно"}</td>
+                    <td>${chat.user_name || "Неизвестно"}</td>
+                    <td>
+                        <a href="/static/chat.html?chat_id=${chat.chat_id}">Перейти</a>
+                        <button onclick="closeChat('${chat.chat_id}')">Закрыть</button>
+                    </td>
+                `;
+
+                table.appendChild(row);
+            });
+        })
+        .catch(error => console.error("Ошибка загрузки чатов:", error));
+}
+async function closeChat(chatId) {
+    if (!confirm("Вы уверены, что хотите закрыть этот чат?")) return;
+
+    fetch(`/api/admin/close-chat?chat_id=${chatId}`, {
+        method: "POST",
+        credentials: "include"
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Ошибка при закрытии чата");
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert("Чат закрыт успешно!");
+        loadChats(); // 🔄 Перезагружаем список чатов
+    })
+    .catch(error => {
+        console.error("Ошибка закрытия чата:", error);
+        alert("Не удалось закрыть чат");
+    });
+}
+
+
+// Загружаем чаты при загрузке страницы
+document.addEventListener("DOMContentLoaded", loadChats);
     </script>
 </body>
 </html>

@@ -154,6 +154,8 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		Value:    fmt.Sprintf("%d", user.ID),
 		Path:     "/",
 		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		Secure:   false,
 	})
 
 	logger.WithFields(logrus.Fields{
@@ -188,10 +190,22 @@ func GetCurrentUser(w http.ResponseWriter, r *http.Request) {
 
 	// Возвращаем информацию о пользователе
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"name":  user.Name,
-		"email": user.Email,
-		"role":  user.Role,
+		"user_id": userID,
+		"name":    user.Name,
+		"email":   user.Email,
+		"role":    user.Role,
 	})
+}
+
+func GetUserID(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("user_id")
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"user_id": cookie.Value})
 }
 
 // CheckAuth verifies if the user is authenticated

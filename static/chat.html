@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат с поддержкой</title>
+    <style>
+        .admin-message {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>Чат с поддержкой</h2>
+    <div id="chat-box"></div>
+    <input type="text" id="message" placeholder="Введите сообщение...">
+    <button onclick="sendMessage()">Отправить</button>
+
+    <script>
+        const chatID = new URLSearchParams(window.location.search).get("chat_id");
+        const wsURL = `ws://${window.location.hostname}:8080/ws?chat_id=${chatID}`;
+        console.log("🟢 Подключение к WebSocket:", wsURL);
+
+        const socket = new WebSocket(wsURL);
+
+        socket.onopen = function() {
+            console.log("✅ WebSocket подключен!", wsURL);
+        };
+
+        socket.onerror = function(event) {
+            console.error("❌ Ошибка WebSocket:", event);
+            console.error("🛑 WebSocket readyState:", socket.readyState);
+        };
+
+        socket.onclose = function(event) {
+            console.warn("⚠️ WebSocket закрыт:", event);
+        };
+
+        socket.onmessage = function(event) {
+            console.log("📩 Получено сообщение:", event.data);
+
+            const msg = JSON.parse(event.data);
+
+            const chatBox = document.getElementById("chat-box");
+            const messageElement = document.createElement("p");
+            if (msg.sender === "Админ") {
+                messageElement.classList.add("admin-message");
+            }
+            messageElement.innerHTML = `<strong>${msg.time || '🛑 ВРЕМЯ НЕ ПРИШЛО'}</strong> | <strong>${msg.sender}:</strong> ${msg.content}`;
+            chatBox.appendChild(messageElement);
+        };
+
+        // ✅ Функция отправки сообщения
+        function sendMessage() {
+            const input = document.getElementById("message");
+            if (!input.value.trim()) return;
+
+            const message = {
+                chat_id: chatID,
+                sender: "Клиент",
+                content: input.value
+            };
+
+            console.log("📤 Отправка сообщения:", message);
+            socket.send(JSON.stringify(message));
+
+            input.value = "";
+        }
+        
+    </script>
+</body>
+</html>
